@@ -11,10 +11,10 @@ class NXAPIException(Exception):
         self.message = message
 
     def __str__(self):
-        return "<NXAPIException ({code}) {mesg}. {data}>".format(
+        return "<NXAPIException ({code}: {mesg!s}) {data!r}>".format(
             code=self.code,
             mesg=self.message,
-            data=' '.join([': '.join(x) for x in self.data.items()])
+            data=self.data.get('msg'),
         )
 
 
@@ -31,7 +31,7 @@ class NXAPI(object):
 
         self._ids = (r for r in range(1, 100000))
 
-    def __call__(self, cmd, method="cli_ascii"):
+    def _execute(self, cmd, method="cli_ascii"):
 
         payload = {
             "params": {
@@ -48,9 +48,7 @@ class NXAPI(object):
             data=json.dumps(payload),
         )
 
-        response.raise_for_status()
         jsonrpc_response = response.json()
-
         error = jsonrpc_response.get('error')
         if error is not None:
             raise NXAPIException(
@@ -60,14 +58,12 @@ class NXAPI(object):
             )
         return jsonrpc_response['result']
 
-    def cli(self, *commands):
-        assert len(commands) > 0
+    def __call__(self, command, *, parsed=False):
+        method = 'cli' if parsed else 'cli_ascii'
+        key = 'body' if parsed else 'msg'
 
-        result = self(' ; '.join(commands), method='cli')
-        return result.get('body')
-
-    def cli_ascii(self, *commands):
-        assert len(commands) > 0
-
-        result = self(' ; '.join(commands), method='cli_ascii')
-        return result.get('msg', '')
+        try:
+            result = self._execute(command, method=method)
+        except IOError:
+            return None
+        return result.get(key)
