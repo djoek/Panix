@@ -14,7 +14,7 @@ class NXAPIException(Exception):
         return "<NXAPIException ({code}: {mesg!s}) {data!r}>".format(
             code=self.code,
             mesg=self.message,
-            data=self.data.get('msg'),
+            data=self.data,
         )
 
 
@@ -22,8 +22,7 @@ class NXAPI(object):
 
     def __init__(self, hostname, username, password, *, scheme='https', port=8080):
         self.url = '{scheme}://{hostname}:{port!s}/ins'.format(
-            scheme=scheme, hostname=hostname, port=port
-        )
+            scheme=scheme, hostname=hostname, port=port)
 
         self.session = requests.Session()
         self.session.auth = (username, password)
@@ -47,14 +46,13 @@ class NXAPI(object):
             self.url,
             data=json.dumps(payload),
         )
-
         jsonrpc_response = response.json()
         error = jsonrpc_response.get('error')
         if error is not None:
             raise NXAPIException(
                 message=error['message'],
                 code=error['code'],
-                data=error['data']
+                data=error['data'].get('msg', error['data'])
             )
         return jsonrpc_response['result']
 
@@ -62,8 +60,11 @@ class NXAPI(object):
         method = 'cli' if parsed else 'cli_ascii'
         key = 'body' if parsed else 'msg'
 
-        try:
-            result = self._execute(command, method=method)
-        except IOError:
-            return None
-        return result.get(key)
+        result = self._execute(command, method=method)
+        if result is not None:
+            if key in result:
+                return result.get(key)
+        else:
+            if parsed:
+                raise NXAPIException("No parsed data available for this command", code=-1, data=None)
+        return result
