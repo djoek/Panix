@@ -13,8 +13,25 @@ Panix offers some helper classes to make the structured output more workable.
 
 from panix import NXAPI
 
-nxos = NXAPI('nxos_switch', username='admin', password='secret')
+nxos = NXAPI('nxos_switch', username='admin', password='secret', scheme='https', port=8080)
 
-show_version = nxos('show version')
+
+# Text output of the command
+sh_ver_text = nxos('show version')
+
+# Some commands have structured output
+sh_ver_data = nxos('show version', parsed=True)
+
+# The structure isn't that great, Panix has helpers
+from panix.helpers.version import version_helper
+
+sh_ver_data = version_helper(sh_ver_data)
+
+
+print(sh_ver_data['system_version'])
+# '8.1(1)'
+
 
 ```
+
+
