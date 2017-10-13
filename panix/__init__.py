@@ -3,6 +3,12 @@ import requests
 
 
 class NXAPIException(Exception):
+    """
+    When NX-API returns an error on a call, this exception will be raised.
+
+    Be aware that it only gets raised when the NX-API response contains an error.
+    In case of connection errors, IOError will be raised.
+    """
     def __init__(self, message, code, data):
         super(NXAPIException, self).__init__(message)
 
@@ -20,15 +26,15 @@ class NXAPIException(Exception):
 
 class NXAPI(object):
 
-    def __init__(self, hostname, username, password, *, scheme='https', port=8080):
+    def __init__(self, hostname, username, password, *, scheme='https', port=443):
         """
         Create an NX-API connection to a device
 
-        :param hostname:
-        :param username:
-        :param password:
-        :param scheme:
-        :param port:
+        :param hostname: the hostname or ip of the device
+        :param username: which username to use for authentication
+        :param password: which password to use for authentication
+        :param scheme: 'https' (default) or 'http'
+        :param port: port to connect to, default is 443.  When using http, default on nxos is 8080
         """
         self.url = '{scheme}://{hostname}:{port!s}/ins'.format(
             scheme=scheme, hostname=hostname, port=port)
@@ -66,6 +72,14 @@ class NXAPI(object):
         return jsonrpc_response['result']
 
     def __call__(self, command, *, parsed=False):
+        """
+        Call the instance of this object to execute commands.  By default, you will get the command text output back
+        Some commands support parsed output, you can toggle this with the parsed=True keyword arg
+
+        :param command: an nx-os command to execute on the target hostname.  example: "show version"
+        :param parsed: boolean
+        :return: text output of the command if parsed=False, dict data structure or None if parsed=True
+        """
         method = 'cli' if parsed else 'cli_ascii'
         key = 'body' if parsed else 'msg'
 
