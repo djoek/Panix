@@ -21,6 +21,15 @@ class NXAPIException(Exception):
 class NXAPI(object):
 
     def __init__(self, hostname, username, password, *, scheme='https', port=8080):
+        """
+        Create an NX-API connection to a device
+
+        :param hostname:
+        :param username:
+        :param password:
+        :param scheme:
+        :param port:
+        """
         self.url = '{scheme}://{hostname}:{port!s}/ins'.format(
             scheme=scheme, hostname=hostname, port=port)
 
