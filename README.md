@@ -27,7 +27,6 @@ from panix.helpers.version import version_helper
 
 sh_ver_data = version_helper(sh_ver_data)
 
-
 print(sh_ver_data['system_version'])
 # '8.1(1)'
 
@@ -37,5 +36,5 @@ print(sh_ver_data['system_version'])
 
 ## Acknowledgements
 
-Thanks to Maarten for coming up with the name
+Thanks to MaartenD for coming up with the name
 
