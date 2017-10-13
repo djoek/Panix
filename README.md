@@ -2,12 +2,28 @@
 
 Panix is a python3 NXAPI convenience library.  It internally uses json and returns the user python native data structures. It leverages requests for the json-rpc handling. 
 
-NXAPI is a Cisco Systems Inc. feature on recent NX-OS devices that opens a http(s) API interface using JSON-RPC to execute commands on the device. 
+NXAPI is a Cisco Systems Inc. feature on recent NX-OS devices running a supported firmware that opens a http(s) API interface using JSON-RPC to execute commands on the device. 
 
 Panix offers some helper classes to make the structured output more workable. 
 
 
 ## Quickstart
+
+First, make sure that on your target device, feature nxapi is supported and active.
+
+```
+# show feature
+Feature Name         Instance State
+-------------------- -------- -----
+...
+nxapi                1        enabled
+...
+
+```
+
+You will want to check the programmability guide of your platform on Cisco.com on how to properly enable nxapi on it, if it is not already.
+
+Once you have activated it, you can use Panix to execute commands on the device:  
 
 ```python
 
