@@ -69,6 +69,7 @@ class NXAPI(object):
                 code=error['code'],
                 data=error['data'].get('msg', error['data'])
             )
+
         return jsonrpc_response['result']
 
     def __call__(self, command, *, parsed=False):
