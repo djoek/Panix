@@ -1,4 +1,4 @@
-from panix.helpers.cleaners import clean_dict, lod_to_d
+from panix.helpers.cleaners import clean_dict, lod_to_d, remove_key_prefix
 
 
 def vsan_helper(vsan_nxapi):
@@ -7,8 +7,11 @@ def vsan_helper(vsan_nxapi):
     :param vsan_nxapi:
     """
 
-    return lod_to_d(
-        clean_dict(vsan_nxapi, 'vsan'),
-        'vsan_id'
-    )
+    return {
+        k: remove_key_prefix(v, 'vsan_')
+        for k, v in lod_to_d(
+            clean_dict(vsan_nxapi, 'vsan'),
+            'vsan_id'
+        ).items()
+    }
 
