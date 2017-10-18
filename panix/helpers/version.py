@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 def version_helper(nxapi_parsed_show_version):
     result = dict()
 
+    # Weird date format 1
     result['kernel_uptime'] = timedelta(
         days=nxapi_parsed_show_version.pop('kern_uptm_days'),
         hours=nxapi_parsed_show_version.pop('kern_uptm_hrs'),
@@ -11,12 +12,13 @@ def version_helper(nxapi_parsed_show_version):
         seconds=nxapi_parsed_show_version.pop('kern_uptm_secs'),
     )
 
+    # Weird date format 2
     result['bios_compile_datetime'] = datetime.strptime(
         nxapi_parsed_show_version.pop('bios_cmpl_time'),
         "%m/%d/%Y"
     )
 
-    # Consistent naming
+    # Make naming consistent
     for key, value in nxapi_parsed_show_version.items():
         new_key = key
 
